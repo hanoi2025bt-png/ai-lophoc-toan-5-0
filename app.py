@@ -2,6 +2,7 @@ import streamlit as st
 import openai
 import pandas as pd
 from datetime import datetime
+from openai import OpenAI
 
 # ================== CẤU HÌNH ===================
 st.set_page_config(page_title="AI LỚP HỌC TOÁN 5.0 – PHIÊN BẢN 2.0", layout="wide")
@@ -26,14 +27,19 @@ if menu == "Chấm bài tự luận":
             st.warning("⚠️ Hãy nhập bài làm trước khi chấm!")
         else:
             with st.spinner("⏳ Đang chấm bài..."):
-                openai.api_key = openai_api_key
-                prompt = f"Hãy chấm bài toán sau, cho điểm (0–10) và viết 1 nhận xét ngắn, rõ ràng:\nĐề: {de_bai}\nBài làm: {bai_lam}"
-                response = openai.ChatCompletion.create(
-                    model="gpt-4o-mini",
-                    messages=[{"role": "user", "content": prompt}],
-                    temperature=0.4,
-                )
-                ket_qua = response.choices[0].message.content
+                from openai import OpenAI
+
+client = OpenAI(api_key=openai_api_key)
+
+prompt = f"Hãy chấm bài toán sau, cho điểm (0–10) và viết 1 nhận xét ngắn, rõ ràng:\nĐề: {de_bai}\nBài làm: {bai_lam}"
+
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[{"role": "user", "content": prompt}],
+    temperature=0.4,
+)
+ket_qua = response.choices[0].message.content
+
                 st.success("✅ Kết quả chấm:")
                 st.write(ket_qua)
 
@@ -80,4 +86,3 @@ else:
     - ✅ Bảng điểm tổng hợp trực quan  
     - ✅ Hỗ trợ xuất file Excel  
     """)
-    fix: xoá dòng commit gây lỗi
