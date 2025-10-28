@@ -80,3 +80,4 @@ else:
     - ✅ Bảng điểm tổng hợp trực quan  
     - ✅ Hỗ trợ xuất file Excel  
     """)
+commit: Nâng cấp lên phiên bản 2.0
