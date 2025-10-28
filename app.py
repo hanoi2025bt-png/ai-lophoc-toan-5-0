@@ -80,4 +80,3 @@ else:
     - ✅ Bảng điểm tổng hợp trực quan  
     - ✅ Hỗ trợ xuất file Excel  
     """)
-    fix: xoá dòng commit gây lỗi
