@@ -34,12 +34,15 @@ if option == "Chấm bài tự luận":
     if st.button("🚀 Bắt đầu chấm"):
         with st.spinner("Đang chấm bài..."):
             prompt = f"Hãy chấm bài toán sau và cho điểm từ 0–10, có nhận xét rõ ràng:\nĐề: {de_bai}\nBài làm: {bai_lam}"
-            response = openai.ChatCompletion.create(
-                model="gpt-4o-mini",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.4
-            )
-            ket_qua = response.choices[0].message.content
+           from openai import OpenAI
+client = OpenAI(api_key=api_key)
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[{"role": "user", "content": prompt}],
+    temperature=0.6
+)
+ket_qua = response.choices[0].message.content
+
             st.success("✅ Kết quả chấm:")
             st.write(ket_qua)
 
@@ -83,10 +86,11 @@ elif option == "Tạo đề & Soạn bài":
     if st.button("⚡ Tạo đề"):
         with st.spinner("Đang tạo đề và soạn bài..."):
             prompt = f"Hãy tạo {so_de} bài toán chủ đề {chu_de} kèm đáp án và gợi ý lời giải chi tiết, ngắn gọn, dễ hiểu cho học sinh lớp 10."
-            response = openai.ChatCompletion.create(
-                model="gpt-4o-mini",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.6
+            response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[{"role": "user", "content": prompt}],
+    temperature=0.6
+)
             )
             st.success("📘 Bộ đề được tạo:")
             st.write(response.choices[0].message.content)
