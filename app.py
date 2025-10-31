@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 from openai import OpenAI
+from PIL import Image
+import pytesseract
 
 # =================== CẤU HÌNH ===================
 st.set_page_config(page_title="AI LỚP HỌC TOÁN 5.0 - PHIÊN BẢN 3.1", layout="wide")
@@ -125,14 +127,36 @@ def voice_to_text():
             return voice_text
 
     return None
+# --------------------------------------------
+# XỬ LÝ DỮ LIỆU BÀI LÀM HỌC SINH (Gõ / Giọng nói / Ảnh OCR)
+# --------------------------------------------
+
 voice_text = voice_to_text()
 if voice_text:
     student_answer = voice_text
-mode = st.radio("📌 Chọn phương thức nhập:", ["✍️ Gõ văn bản", "🎤 Giọng nói", "📸 Ảnh"])
 
+# Chọn phương thức nhập bài
+mode = st.radio("🛠️ Chọn phương thức nhập:",
+                ["✍️ Gõ văn bản", "🎤 Giọng nói", "🖼️ Ảnh"])
+
+# === Gõ văn bản ===
 if mode == "✍️ Gõ văn bản":
-    student_answer = st.text_area("Bài làm học sinh", "")
+    student_answer = st.text_area("✏️ Bài làm học sinh:", "")
+
+# === Giọng nói ===
 elif mode == "🎤 Giọng nói":
     student_answer = voice_to_text()
-elif mode == "📸 Ảnh":
-    # phần OCR giữ nguyên
+
+# === Ảnh ===
+elif mode == "🖼️ Ảnh":
+    uploaded_file = st.file_uploader("📤 Tải ảnh bài làm học sinh", type=["png", "jpg", "jpeg"])
+
+    if uploaded_file is not None:
+        img = Image.open(uploaded_file)
+        st.image(img, caption="📎 Ảnh bài làm", use_column_width=True)
+
+        with st.spinner("🔍 Đang nhận dạng chữ viết từ ảnh..."):
+            student_answer = pytesseract.image_to_string(img, lang="eng+vie")
+
+        st.write("📄 **Văn bản OCR trích xuất:**")
+        st.text_area("👉 Kết quả OCR", student_answer, height=150)
