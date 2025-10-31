@@ -2,3 +2,5 @@ streamlit
 pandas
 openai>=1.40.0
 openpyxl
+openai
+streamlit==1.31.1
