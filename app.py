@@ -128,3 +128,11 @@ def voice_to_text():
 voice_text = voice_to_text()
 if voice_text:
     student_answer = voice_text
+mode = st.radio("📌 Chọn phương thức nhập:", ["✍️ Gõ văn bản", "🎤 Giọng nói", "📸 Ảnh"])
+
+if mode == "✍️ Gõ văn bản":
+    student_answer = st.text_area("Bài làm học sinh", "")
+elif mode == "🎤 Giọng nói":
+    student_answer = voice_to_text()
+elif mode == "📸 Ảnh":
+    # phần OCR giữ nguyên
