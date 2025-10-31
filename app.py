@@ -131,35 +131,64 @@ def voice_to_text():
 # XỬ LÝ DỮ LIỆU BÀI LÀM HỌC SINH (Gõ / Giọng nói / Ảnh OCR)
 # --------------------------------------------
 
-# --------------------------------------------
-# XỬ LÝ DỮ LIỆU BÀI LÀM HỌC SINH (Gõ / Giọng nói / Ảnh OCR)
-# --------------------------------------------
+# Biến kết quả (phòng trường hợp chưa có dữ liệu)
+student_answer = ""
 
-voice_text = voice_to_text()
+# Nếu thầy vừa chuyển giọng nói thành text phía trên:
+try:
+    voice_text = voice_to_text()
+except NameError:
+    voice_text = None
+
 if voice_text:
     student_answer = voice_text
 
-mode = st.radio("🛠️ Chọn phương thức nhập:",
-                ["✍️ Gõ văn bản", "🎤 Giọng nói", "🖼️ Ảnh"])
+# Chọn phương thức nhập
+mode = st.radio(
+    "🛠️ Chọn phương thức nhập:",
+    ["✍️ Gõ văn bản", "🎤 Giọng nói", "🖼️ Ảnh"]
+)
 
 # === Gõ văn bản ===
 if mode == "✍️ Gõ văn bản":
-    student_answer = st.text_area("✏️ Bài làm học sinh:", "")
+    student_answer = st.text_area("✏️ Bài làm học sinh:", "", height=160)
 
 # === Giọng nói ===
 elif mode == "🎤 Giọng nói":
-    student_answer = voice_to_text()
+    # Nếu chưa có voice_text ở trên thì gọi lại
+    if not voice_text:
+        student_answer = voice_to_text()
+    else:
+        student_answer = voice_text
 
 # === Ảnh OCR ===
 elif mode == "🖼️ Ảnh":
-    uploaded_file = st.file_uploader("📤 Tải ảnh bài làm học sinh", type=["png", "jpg", "jpeg"])
+    uploaded_file = st.file_uploader(
+        "📤 Tải ảnh bài làm học sinh", type=["png", "jpg", "jpeg"]
+    )
 
     if uploaded_file is not None:
-        img = Image.open(uploaded_file)
-        st.image(img, caption="📎 Ảnh bài làm", use_column_width=True)
+        try:
+            img = Image.open(uploaded_file)
+            st.image(img, caption="📎 Ảnh bài làm", use_column_width=True)
 
-        with st.spinner("🔍 Đang nhận dạng chữ viết từ ảnh..."):
-            student_answer = pytesseract.image_to_string(img, lang="eng+vie")
+            with st.spinner("🔍 Đang nhận dạng chữ viết từ ảnh..."):
+                # Tesseract với ngôn ngữ Việt + Anh (cải thiện độ chính xác)
+                student_answer = pytesseract.image_to_string(
+                    img, lang="eng+vie"
+                ).strip()
 
-        st.write("📄 **Văn bản OCR trích xuất:**")
-        st.text_area("📄 Kết quả OCR", student_answer, height=150)
+            st.write("📄 **Văn bản OCR trích xuất:**")
+            st.text_area("📄 Kết quả OCR", student_answer, height=160)
+
+        except Exception as e:
+            st.error(f"⚠️ Không nhận dạng được ảnh: {e}")
+            student_answer = ""
+
+# Hiển thị vùng tổng hợp nếu đã có kết quả ở bất kỳ cách nhập nào
+if student_answer:
+    st.markdown("### ✅ Bài làm (tổng hợp)")
+    st.text_area("📦 Nội dung", student_answer, height=200, key="answer_final")
+
+# (Tùy chọn) Lưu vào session_state để dùng tiếp ở bước chấm điểm
+st.session_state["student_answer"] = student_answer
