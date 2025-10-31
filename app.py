@@ -99,3 +99,29 @@ else:
     - ✅ Bảng điểm tổng hợp trực quan
     - ✅ Hỗ trợ toàn diện cho giáo viên Toán 5.0
     """)
+import streamlit as st
+import openai
+import tempfile
+
+def voice_to_text():
+    st.subheader("🎤 Nhập bằng giọng nói")
+
+    audio = st.audio_input("Giữ nút micro và đọc đề bài hoặc bài làm:")
+
+    if audio is not None:
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
+        temp_file.write(audio.read())
+        temp_file.seek(0)
+
+        if st.button("⏳ Chuyển giọng nói thành văn bản"):
+            transcript = openai.audio.transcriptions.create(
+                model="whisper-1",
+                file=open(temp_file.name, "rb")
+            )
+            voice_text = transcript.text
+            st.success("✅ Đã nhận dạng giọng nói")
+            st.text_area("Nội dung chuyển đổi:", voice_text, height=150)
+            st.session_state['voice_input'] = voice_text
+            return voice_text
+
+    return None
