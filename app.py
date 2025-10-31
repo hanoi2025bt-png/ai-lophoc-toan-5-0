@@ -125,3 +125,6 @@ def voice_to_text():
             return voice_text
 
     return None
+voice_text = voice_to_text()
+if voice_text:
+    student_answer = voice_text
