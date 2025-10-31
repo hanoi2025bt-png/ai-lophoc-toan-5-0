@@ -131,11 +131,14 @@ def voice_to_text():
 # XỬ LÝ DỮ LIỆU BÀI LÀM HỌC SINH (Gõ / Giọng nói / Ảnh OCR)
 # --------------------------------------------
 
+# --------------------------------------------
+# XỬ LÝ DỮ LIỆU BÀI LÀM HỌC SINH (Gõ / Giọng nói / Ảnh OCR)
+# --------------------------------------------
+
 voice_text = voice_to_text()
 if voice_text:
     student_answer = voice_text
 
-# Chọn phương thức nhập bài
 mode = st.radio("🛠️ Chọn phương thức nhập:",
                 ["✍️ Gõ văn bản", "🎤 Giọng nói", "🖼️ Ảnh"])
 
@@ -147,7 +150,7 @@ if mode == "✍️ Gõ văn bản":
 elif mode == "🎤 Giọng nói":
     student_answer = voice_to_text()
 
-# === Ảnh ===
+# === Ảnh OCR ===
 elif mode == "🖼️ Ảnh":
     uploaded_file = st.file_uploader("📤 Tải ảnh bài làm học sinh", type=["png", "jpg", "jpeg"])
 
@@ -159,4 +162,4 @@ elif mode == "🖼️ Ảnh":
             student_answer = pytesseract.image_to_string(img, lang="eng+vie")
 
         st.write("📄 **Văn bản OCR trích xuất:**")
-        st.text_area("👉 Kết quả OCR", student_answer, height=150)
+        st.text_area("📄 Kết quả OCR", student_answer, height=150)
